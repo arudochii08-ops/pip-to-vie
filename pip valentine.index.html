@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chaos Love Journey 💘</title>
+
+<style>
+body{
+margin:0;
+font-family:Comic Sans MS,cursive;
+background:linear-gradient(135deg,#ff9ad5,#ff0033);
+color:white;
+overflow:hidden;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+#app{
+width:100%;
+max-width:420px;
+padding:20px;
+box-sizing:border-box;
+display:flex;
+flex-direction:column;
+align-items:center;
+text-align:center;
+animation:zoom .7s cubic-bezier(.2,1.4,.3,1);
+}
+
+@keyframes zoom{
+0%{transform:scale(.6);opacity:0;}
+60%{transform:scale(1.1);}
+100%{transform:scale(1);opacity:1;}
+}
+
+.swipeOut{animation:swipeOut .35s forwards;}
+@keyframes swipeOut{to{transform:translateX(-120%);opacity:0;}}
+
+button{
+padding:12px;
+margin:6px;
+font-size:15px;
+border:none;
+border-radius:14px;
+background:white;
+box-shadow:0 0 12px hotpink;
+width:90%;
+}
+
+#loveBar{width:90%;}
+
+.fall{
+position:absolute;
+font-size:22px;
+animation:fall linear forwards;
+}
+
+@keyframes fall{
+to{transform:translateY(110vh) rotate(720deg);opacity:0;}
+}
+
+.popup{
+position:fixed;
+top:40%;
+left:50%;
+transform:translate(-50%,-50%);
+background:white;
+color:#ff2f92;
+padding:14px;
+border-radius:14px;
+font-weight:bold;
+}
+
+.letterWrap{perspective:900px;margin-top:10px;}
+
+.letter{
+background:white;
+color:#ff2f92;
+padding:18px;
+border-radius:16px;
+box-shadow:0 0 20px hotpink;
+max-height:340px;
+overflow:auto;
+line-height:1.5;
+transform:rotateX(-90deg);
+animation:openLetter 1.6s ease forwards;
+}
+
+@keyframes openLetter{
+0%{transform:rotateX(-90deg);opacity:0;}
+60%{transform:rotateX(20deg);}
+100%{transform:rotateX(0);opacity:1;}
+}
+</style>
+</head>
+
+<body>
+
+<div id="app"></div>
+
+<script>
+
+let slide=1;
+let love=0;
+
+const fallbackResponses=[
+"Cinta overload 💖",
+"Gemes banget 💞",
+"Romantis maksimal ✨",
+"Kamu bikin hati hangat 💘",
+"Lucu banget 😆"
+];
+
+const data=[
+{emoji:"💖",q:"Apa hal paling bikin kamu senyum dariku?"},
+{emoji:"",q:"Seberapa besar cinta kita?"},
+{emoji:"✨",q:"Kenangan favorit kita apa?"},
+{emoji:"💘",q:"Kalau aku kangen, kamu gimana?"},
+{emoji:"🌹",q:"Tempat date impian kita?"},
+{emoji:"💗",q:"Hal kecil yang bikin kamu jatuh hati dariku?"},
+{emoji:"🫶",q:"Momen romantis kita?"},
+{emoji:"💞",q:"Kalau sedih, aku harus gimana?"},
+{emoji:"🌺",q:"Kenapa kamu pilih aku?"},
+{emoji:"🎮",q:"Aktivitas seru bareng?"},
+{emoji:"🌷",q:"Cinta itu menurut kamu apa?"},
+{emoji:"💕",q:"Kapan kamu paling kangen aku?"},
+{emoji:"🌼",q:"Moment paling lucu kita?"},
+{emoji:"💓",q:"Apa bikin kamu nyaman?"},
+{emoji:"🌻",q:"Kalau jalan-jalan kemana?"},
+{emoji:"💟",q:"Hal kecil bikin jatuh cinta lagi?"},
+{emoji:"🌈",q:"Impian romantis kita?"},
+{emoji:"💌",q:"Kenangan tak terlupakan?"},
+{emoji:"🩷",q:"Hal favorit hubungan kita?"},
+{emoji:"👑",q:"Ending cinta siap?"}
+];
+
+const answers=[
+["Karena kamu lucu","Senyummu candu","Aku jatuh hati semuanya"],
+["Cinta tak terbatas"],
+["Kenangan pertama","Saat tertawa","Setiap hari"],
+["Peluk kamu","Chat terus","Kangen brutal"],
+["Pantai sunset","Kafe lucu","Keliling dunia"],
+["Perhatian kecil","Cara kamu bicara","Senyumanmu"],
+["Saat kita tertawa","Waktu berdua","Semua momen"],
+["Peluk erat","Bikin ketawa","Dengerin cerita"],
+["Karena kamu kamu","Nyaman banget","Tak terganti"],
+["Mabar MLBB","Muncak Roblox","Quality time berdua"],
+["Rasa nyaman","Saling percaya","Bahagia"],
+["Setiap malam","Saat jauh","Terus-terusan"],
+["Saat kita ngakak","Momen aneh","Hal random"],
+["Kehadiranmu","Cara bicara","Energi kamu"],
+["Road trip","Wisata cinta","Kemana aja"],
+["Hal kecilmu","Tatapanmu","Semuanya"],
+["Rumah bersama","Liburan cinta","Masa depan"],
+["Hari pertama","Moment lucu","Semua kenangan"],
+["Cara kita ngobrol","Kebersamaan","Kenyamanan"]
+];
+
+const responses=[
+["Aku juga senyum terus 💞","Kamu bikin hari cerah 🌸","Manis banget 💖"],
+["Cinta overload 💘"],
+["Kenangan indah ✨","Lucu banget 😆","Tak terlupakan 💓"],
+["Peluk balik 🤗","Chat nonstop 💬","Kangen parah 💕"],
+["Romantis 🌅","Lucu banget ☕","Petualangan cinta 🌍"],
+["Bikin meleleh 💗","Gemes banget 🫶","Manis 💝"],
+["Cinta banget 💞","Hangat 💖","Tak terganti ✨"],
+["Peluk virtual 🤍","Ketawa terus 😂","Dengerin selalu 💘"],
+["Pilihan terbaik 💎","Nyaman 💕","Cinta 💖"],
+["Gas mabar sampai epic 💖","Roblox trip seru 🎮💞","Waktu berdua paling manis ✨"],
+["Definisi cinta 💞"],
+["Rindu berat 💘"],
+["Ketawa cinta 😂"],
+["Nyaman 💖"],
+["Trip romantis 🚗"],
+["Jatuh cinta lagi 💗"],
+["Impian bersama 🌈"],
+["Memori indah 💌"],
+["Hubungan goals 💞"]
+];
+
+function randomFallback(){
+return fallbackResponses[Math.random()*fallbackResponses.length|0];
+}
+
+function storm(n){
+for(let i=0;i<n;i++){
+let f=document.createElement("div");
+f.className="fall";
+f.innerText=["💖","🌸","✨","💘"][Math.random()*4|0];
+f.style.left=Math.random()*100+"vw";
+f.style.animationDuration=(Math.random()*2+2)+"s";
+document.body.appendChild(f);
+setTimeout(()=>f.remove(),4000);
+}
+}
+
+function popup(text){
+let p=document.createElement("div");
+p.className="popup";
+p.innerText=text;
+document.body.appendChild(p);
+setTimeout(()=>p.remove(),1300);
+}
+
+function cinematicNext(){
+app.classList.add("swipeOut");
+setTimeout(()=>{
+slide=slide===20?1:slide+1;
+render();
+},300);
+}
+
+function safeResponse(i){
+return responses[slide-1]?.[i] || randomFallback();
+}
+
+function render(){
+
+app.className="";
+app.innerHTML="";
+storm(12);
+
+let d=data[slide-1];
+
+let h=document.createElement("h2");
+h.textContent=(d.emoji?d.emoji+" ":"")+"Slide "+slide;
+app.appendChild(h);
+
+let q=document.createElement("p");
+q.textContent=d.q;
+app.appendChild(q);
+
+if(slide===2){
+
+let meter=document.createElement("input");
+meter.type="range";
+meter.id="loveBar";
+meter.min=0;
+meter.max=10000000;
+
+meter.oninput=e=>{
+love=e.target.value;
+popup("Love "+love+"% 💘");
+};
+
+app.appendChild(meter);
+
+let next=document.createElement("button");
+next.textContent="Lanjut ➜";
+next.onclick=cinematicNext;
+app.appendChild(next);
+
+return;
+}
+
+if(slide===20){
+
+let wrap=document.createElement("div");
+wrap.className="letterWrap";
+
+let end=document.createElement("div");
+end.className="letter";
+
+end.innerHTML=`
+<h3 style="text-align:center;">💌 Surat Cinta 💌</h3>
+<p>
+Aida Fatika Dewi…<br><br>
+
+Terima kasih sudah hadir di hidupku — bukan hanya sebagai seseorang yang menemani, tapi sebagai alasan kenapa hari-hariku terasa lebih berarti. Kehadiranmu seperti cahaya lembut yang selalu berhasil menenangkan pikiran, bahkan di hari yang paling melelahkan sekalipun.<br><br>
+
+Sejak kamu datang, hal-hal sederhana berubah menjadi kenangan yang luar biasa. Tawa kecil kita, obrolan random, diam yang nyaman — semuanya terasa seperti potongan cerita yang ingin kuingat selamanya.<br><br>
+
+Kamu adalah seseorang yang melihat aku dari nol, mendukung tanpa ragu, percaya tanpa syarat, dan tetap berdiri di sampingku bahkan ketika aku belum menjadi apa-apa. Itu adalah sesuatu yang tidak akan pernah bisa kubalas sepenuhnya — tapi akan selalu kuhargai sepanjang hidupku.<br><br>
+
+Bersamamu aku belajar arti sabar, arti memahami, dan arti tumbuh bersama. Kita bukan hanya berjalan berdampingan — kita berkembang, saling menguatkan, dan saling mengingatkan bahwa cinta bukan hanya perasaan, tapi juga pilihan setiap hari.<br><br>
+
+Ada banyak momen kecil yang mungkin terlihat biasa bagi orang lain — tapi bagiku terasa luar biasa karena kamu ada di sana. Cara kamu tersenyum, cara kamu mendengar, cara kamu membuat suasana menjadi hangat — semuanya membentuk rasa nyaman yang sulit dijelaskan dengan kata-kata.<br><br>
+
+Aku bersyukur bisa mengenalmu lebih dari sekadar cerita. Kamu menjadi tempat pulang, tempat berbagi, dan tempat di mana aku merasa diterima sepenuhnya. Tidak ada kepura-puraan — hanya kejujuran dan rasa yang tulus.<br><br>
+
+Perjalanan kita mungkin tidak selalu mulus, tapi justru di situlah indahnya. Kita belajar, jatuh, bangkit, dan terus melangkah bersama. Setiap tantangan terasa lebih ringan ketika dijalani berdua.<br><br>
+
+Aku ingin terus menciptakan kenangan baru bersamamu — tawa baru, cerita baru, petualangan baru, dan mimpi-mimpi yang kita bangun perlahan. Bukan hanya hari ini, tapi selama kita masih memilih untuk berjalan bersama.<br><br>
+
+Terima kasih sudah menjadi bagian paling indah dari perjalanan hidupku. Kehadiranmu bukan sekadar pelengkap — kamu adalah warna yang membuat segalanya terasa hidup.<br><br>
+
+Semoga kita terus tumbuh, terus tertawa, terus memahami, dan terus menjaga apa yang sudah kita bangun bersama. Karena bagiku, setiap detik bersamamu adalah sesuatu yang berharga.<br><br>
+
+Dengan penuh rasa sayang dan penghargaan…<br><br>
+
+Rafif Abdiel Gallardo 💞
+</p>
+`;
+
+wrap.appendChild(end);
+app.appendChild(wrap);
+
+let replay=document.createElement("button");
+replay.textContent="Replay 💖";
+replay.onclick=cinematicNext;
+app.appendChild(replay);
+
+return;
+}
+
+answers[slide-1].forEach((ans,i)=>{
+let b=document.createElement("button");
+b.textContent=ans;
+b.onclick=()=>{
+storm(14);
+popup(safeResponse(i));
+setTimeout(cinematicNext,900);
+};
+app.appendChild(b);
+});
+
+}
+
+render();
+
+</script>
+
+</body>
+</html>
